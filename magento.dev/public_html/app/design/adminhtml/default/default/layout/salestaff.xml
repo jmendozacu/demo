@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <salestaffadmin_adminhtml_staff_index>
+        <reference name="content">
+            <block type="salestaff/adminhtml_staff" name="staff" />
+        </reference>
+    </salestaffadmin_adminhtml_staff_index>
+</layout>

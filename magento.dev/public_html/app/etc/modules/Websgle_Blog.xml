@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Websgle_Blog>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Websgle_Blog>
+    </modules>
+</config>

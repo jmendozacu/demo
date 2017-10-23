@@ -1,0 +1,100 @@
+﻿<?xml version="1.0"?>
+<config>
+    <modules>
+		<!--Version của module-->
+        <Dksmart_Salestaff>
+            <version>0.1.2</version>
+        </Dksmart_Salestaff>
+    </modules>
+    <frontend>
+        <routers>
+            <salestaff>
+                <use>standard</use>
+                <args>
+                    <module>Dksmart_Salestaff</module>
+                    <frontName>salestaff</frontName>
+                </args>
+            </salestaff>
+        </routers>
+        <layout>
+            <updates>
+                <salestaff>
+                    <file>salestaff.xml</file>
+                </salestaff>
+            </updates>
+        </layout>
+    </frontend>
+	<!--Khai báo admin router-->
+	<admin>
+        <routers>
+            <salestaffadmin>
+                <use>admin</use>
+                <args>
+                    <module>Dksmart_Salestaff</module>
+                    <frontName>salestaffadmin</frontName>
+                </args>
+            </salestaffadmin>
+        </routers>
+    </admin>
+	<adminhtml>
+		<!-- Khai báo file layout trong admin-->
+        <layout>
+            <updates>
+                <salestaff>
+                    <file>salestaff.xml</file>
+                </salestaff>
+            </updates>
+        </layout>
+	</adminhtml>
+	<global>
+		<!--Khai báo model, resource model-->
+        <models>
+            <salestaff>
+                <class>Dksmart_Salestaff_Model</class>
+                <resourceModel>salestaff_mysql4</resourceModel>
+            </salestaff>
+            <salestaff_mysql4>
+                <class>Dksmart_Salestaff_Model_Mysql4</class>
+                <entities>
+                    <staff>
+                        <table>salestaff_staff</table>
+                    </staff>
+				</entities>
+			</salestaff_mysql4>
+		</models>
+		<!--Khai báo resource để connect và thao tác với database được-->
+		<resources>
+            <salestaff_setup>
+                <setup>
+                    <module>Dksmart_Salestaff</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </salestaff_setup>
+            <salestaff_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </salestaff_write>
+            <salestaff_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </salestaff_read>
+        </resources>
+		<!--Khai báo block để có thể dùng được-->
+		<blocks>
+            <salestaff>
+                <class>Dksmart_Salestaff_Block</class>
+            </salestaff>
+        </blocks>
+		<!--Khai báo helper-->
+        <helpers>
+            <salestaff>
+                <class>Dksmart_Salestaff_Helper</class>
+            </salestaff>
+        </helpers>
+	</global>
+					
+</config>

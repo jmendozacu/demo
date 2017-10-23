@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Dksmart_Salestaff>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Dksmart_Salestaff>
+    </modules>
+</config>

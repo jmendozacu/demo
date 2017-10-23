@@ -1,0 +1,207 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.3/css/select.dataTables.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <style>
+        div#product_wrapper{
+            width:50%;
+            float:left;
+            display:inline;
+        }
+        div#cart_wrapper{
+            width:50%;
+            float:right;
+            display:inline;
+        }
+    </style>
+</head>
+<body>
+<table id="customer" class="display" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Email</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>FName
+        <th>Email</th>
+    </tr>
+    </tfoot>
+</table>
+<table id="product" class="display" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Image</th>
+        <th>Image</th>
+    </tr>
+    </thead>
+</table>
+<!--<button id="addRow">ádasd</button>-->
+<table id="cart" class="display" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Image</th>
+        <th>delete</th>
+
+    </tr>
+    </thead>
+</table>
+<script>
+    function detailCustomer ( d ) {
+        console.log(d);
+        // `d` is the original data object for the row
+        return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+                '<tr>'+
+                '<td>Full name:</td>'+
+                '<td>'+d.entity_id+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                '<td>Extension number:</td>'+
+                '<td>'+d.email+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                '<td>Extra info:</td>'+
+                '<td>And any further details here (images etc)...</td>'+
+                '</tr>'+
+                '</table>';
+    }
+    $(document).ready(function(){
+        var tableCustomer = $('#customer').DataTable({
+            "processing": true,
+            "ajax": 'http://magento.dev/salestaff/index/customer',
+            "columns"   :   [
+                {   "data" :   "entity_id" },
+                {   "data"  :   "email" },
+                {   "data"  :   "lastname" },
+                {
+                    "targets": -1,
+                    "defaultContent": "<button class='details-control'style='margin: auto; display: block'>View Detail!</button>",
+                    "orderable":      false,
+                    "data":           null
+                }
+            ],
+            "order": [[1, 'asc']]
+        });
+        $('#customer tbody').on('click', 'button.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = tableCustomer.row( tr );
+            console.log(row);
+            if ( row.child.isShown() ) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child( detailCustomer(row.data()) ).show();
+                tr.addClass('shown');
+            }
+        } );
+    } );
+</script>
+<script>
+
+    function detailProduct ( d ) {
+        // `d` is the original data object for the row
+        return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+                '<tr>'+
+                '<td>Full name:</td>'+
+                '<td>'+d.entity_id+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                '<td>Extension number:</td>'+
+                '<td>'+d.type_id+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                '<td>Extra info:</td>'+
+                '<td>And any further details here (images etc)...</td>'+
+                '</tr>'+
+                '</table>';
+    }
+
+    $(document).ready(function(){
+        var tableProduct = $('#product').DataTable({
+            processing: true,
+            ajax: 'http://magento.dev/salestaff/index/product',
+            columns   :   [
+                {   "data" :   "entity_id" },
+                {   "data"  :   "sku" },
+                {   "data"  :   "entity_type_id" },
+                {
+                    "targets": -1,
+                    "defaultContent": "<button class='details-control'>View Detail!</button>",
+                    "orderable":      false,
+                    "data":           null
+                },
+                {
+                    "targets": -1,
+                    "defaultContent":"<button class='addRow'>Add to Cart</button>",
+                    "orderable":      false,
+                    "data":           null
+                }
+            ],
+
+            "order": [[1, 'asc']]
+        });
+
+
+        $('#product tbody').on('click', 'button.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = tableProduct.row( tr );
+            if ( row.child.isShown() ) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child( detailProduct(row.data()) ).show();
+                tr.addClass('shown');
+            }
+        } );
+        var t = $('#cart').DataTable({
+            "paging":   false,
+            "ordering": false,
+            "info":     false,
+            "searching": false
+        });
+
+        $('#product').on( 'click', 'button.addRow',function () {
+            var tr = $(this).closest('tr');
+            var row = tableProduct.row( tr );
+            var item = row.data();
+            console.log(item);
+            t.row.add( [
+                item.entity_id,
+                item.sku,
+                "<img src='" +item.image+ " '>",
+                item.price,
+                "<button class='delete'>Delete</button>"
+            ] ).draw( false );
+        } );
+        $('#cart').on('click', '.delete', function(){
+            var row = this.closest('tr');
+            t.row(row).remove().draw(false);
+        });
+
+    } );
+</script>
+
+
+</body>
+</html>

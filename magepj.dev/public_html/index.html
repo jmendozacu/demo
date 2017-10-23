@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="http://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+<script>
+  $(document).ready(function(){
+    $('#demo').DataTable();
+  });
+</script>
+<div class="container">
+<select id="myselect" onchange="change_myselect(this.value)">
+  <option value="">Choose an option:</option>
+  <option value="customers">Customers</option>
+  <option value="products">Products</option>
+</select>
+  <p>
+<table id ="demo" class="table"></table>
+  </p>
+<!--<h2 style="text-alignh center">CUSTOMER</h2>-->
+<!--<p id="customer" ></p>-->
+<div id="detail"></div>
+<!--<h2 style="text-align: center">PRODUCT</h2>-->
+<!--<p id="product" ></p>-->
+<!--<div id="detail_product"></div>-->
+
+<script>
+  function change_myselect(sel) {
+    if (sel == "customers")
+    {
+        document.getElementById("demo").innerHTML = txt;
+    }
+    else if (sel == "products")
+    {
+      document.getElementById("demo").innerHTML = txt1;
+    }
+  };
+  var objCustomer, dbParam, xmlhttp, myObjCustomer, x, txt = "";
+  objCustomer = { "table":"customers", "limit":20 };
+  dbParam = JSON.stringify(objCustomer);
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      myObjCustomer = JSON.parse(this.responseText);
+//      txt += "<table border='1' style='margin: auto' class='table' id='mytable'>";
+      txt += "<thead>";
+      txt += "<th>" + "ID" + "</th>";
+      txt += "<th>" + "Email" + "</th>";
+      txt += "<th>" + "First Name" + "</th>";
+      txt += "<th>" + "Last Name" + "</th>";
+      txt += "<th>" + " " + "</th>";
+      txt += "</thead>";
+
+      txt += "<tfoot>";
+      txt += "<th>" + "ID" + "</th>";
+      txt += "<th>" + "Email" + "</th>";
+      txt += "<th>" + "First Name" + "</th>";
+      txt += "<th>" + "Last Name" + "</th>";
+      txt += "<th>" + " " + "</th>";
+      txt += "</tfoot>";
+      txt += "<tbody>";
+
+
+      for (i = 0; i<myObjCustomer.length; i++) {
+//         var entId=myObjCustomer[i].entity_id;
+        txt += "<tr >";
+          txt +=  "<td>" + myObjCustomer[i].entity_id + "</td>" ;
+          txt +=  "<td>" + myObjCustomer[i].email + "</td>" ;
+          txt +=  "<td>" + myObjCustomer[i].firstname + "</td>" ;
+          txt +=  "<td>" + myObjCustomer[i].lastname + "</td>" ;
+          txt +=  "<td>" + "<button id=" + myObjCustomer[i].entity_id + " type='button' onclick='getDetailCustomer(this.id)' >View Detail</button>" + "</td>" ;
+
+          txt += "</tr>";
+      }
+      txt += "</tbody>";
+//      txt += "</table>";
+//      document.getElementById("customer").innerHTML = txt;
+    }
+
+  };
+  function getDetailCustomer(id) {
+    console.log(id);
+    var detail = "";
+    for( i in myObjCustomer)
+    {
+      if (id == myObjCustomer[i].entity_id)
+      {
+        detail += "ID: " + myObjCustomer[i].entity_id + "<br>";
+        detail += "Email: " + myObjCustomer[i].email + "<br>";
+        document.getElementById("detail").innerHTML = detail;
+      }
+    }
+
+  };
+  xmlhttp.open("GET", "http://magento.dev/salestaff/index/customer", true);
+  xmlhttp.send();
+
+</script>
+
+<script>
+  var objProduct, dbParam, xmlhttp, myObjProduct, x, txt1 = "";
+  objProduct = { "table":"products", "limit":20 };
+  dbParam = JSON.stringify(objProduct);
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      myObjProduct = JSON.parse(this.responseText);
+//      txt1 += "<table border='1'>"
+      txt1 += "<th>" + "ID" + "</th>";
+      txt1 += "<th>" + "Email" + "</th>";
+      txt1 += "<th>" + "First Name" + "</th>";
+      txt1 += "<th>" + "Last Name" + "</th>";
+      txt1 += "<th>" + " " + "</th>";
+
+      for (i in myObjProduct) {
+        txt1 += "<tr>";
+        txt1 +=  "<td>" + myObjProduct[i].entity_id + "</td>" ;
+        txt1 +=  "<td>" + myObjProduct[i].type_id + "</td>" ;
+        txt1 +=  "<td>" + myObjProduct[i].sku + "</td>" ;
+        txt1 +=  "<td>" + myObjProduct[i].image + "</td>" ;
+        txt1 +=  "<td>" + "<button id=" + myObjProduct[i].entity_id + " type='button' onclick='getDetailProduct(this.id)' >View Detail</button>" + "</td>" ;
+
+        txt1 += "</tr>";
+      }
+//      txt1 += "</table>"
+//      document.getElementById("product").innerHTML = txt1;
+    }
+  };
+  function getDetailProduct(id) {
+    console.log(id);
+    var detail = "";
+    for( i in myObjProduct)
+    {
+      if (id == myObjProduct[i].entity_id)
+      {
+        detail += "ID: " + myObjProduct[i].entity_id + "<br>";
+        detail += "SKU: " + myObjProduct[i].sku + "<br>";
+        document.getElementById("detail").innerHTML = detail;
+      }
+    }
+
+  };
+  xmlhttp.open("GET", "http://magento.dev/salestaff/index/product", true);
+  xmlhttp.send();
+</script>
+
+</div>
+
+
+</body>
+</html>

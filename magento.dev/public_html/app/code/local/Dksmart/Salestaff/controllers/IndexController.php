@@ -4,6 +4,81 @@ class Dksmart_Salestaff_IndexController extends Mage_Core_Controller_Front_Actio
         $this->loadLayout();
         $this->renderLayout();
     }
+    public function orderAction(){
+        $productids = array(924, 921); //g
+        $buyInfo = array( 'qty' => 1);
+        $id=$this->getRequest()->getParam("id"); // get Customer Id
+        $storeId = 1;
+//        var_dump(;die();
+
+        $customer = Mage::getModel('customer/customer')->load($id);
+        $defaultBilling = $customer->getDefaultBilling();
+        $defaultBillingAddress = Mage::getModel('customer/address')->load($defaultBilling)->getData();
+//        var_dump($defaultBillingAddress);die();
+        $defaultShipping = $customer->getDefaultShipping();
+        $defaultShippingAddress = Mage::getModel('customer/address')->load($defaultShipping)->getData();
+//        var_dump($defaultShippingAddress); die();
+
+        $websiteId = $customer->getWebsiteId();
+        $quote = Mage::getModel('sales/quote')->setStoreId($storeId);
+        $quote = Mage::getModel('sales/quote')->setWebsiteId($websiteId);
+
+// Assign Customer To Sales Order Quote
+        $quote->assignCustomer($customer);
+
+// Configure Notification
+//        $quote->setSendCconfirmation(1);
+        foreach ($productids as $id)
+        {
+            $product = Mage::getModel('catalog/product')->load($id);
+            $quote->addProduct($product, new Varien_Object($buyInfo));
+        }
+
+// Set Sales Order Billing Address
+        $billingAddress = $quote->getBillingAddress()->addData($defaultBillingAddress);
+//        var_dump($billingAddress); die();
+// Set Sales Order Shipping Address
+        $shippingAddress = $quote->getShippingAddress()->addData($defaultShippingAddress);
+//        var_dump($shippingAddress); die();
+
+//        if ($shipprice == 0) {
+//            $shipmethod = 'freeshipping_freeshipping';
+//        }
+
+// Collect Rates and Set Shipping & Payment Method
+        $shippingAddress->setCollectShippingRates(true)
+            ->collectShippingRates()
+            ->setShippingMethod('flatrate_flatrate')
+            ->setPaymentMethod('checkmo');
+// Set Sales Order Payment
+        $quote->getPayment()->importData(array('method' => 'checkmo'));
+//        var_dump($quote);die();
+
+// Collect Totals & Save Quote
+        $quote->collectTotals()->save();
+
+        try {
+            // Create Order From Quote
+            $service = Mage::getModel('sales/service_quote', $quote);
+            $service->submitAll();
+            $increment_id = $service->getOrder()->getRealOrderId();
+        }
+        catch (Exception $ex) {
+            echo $ex->getMessage();
+        }
+        catch (Mage_Core_Exception $e) {
+            echo $e->getMessage();
+        }
+
+
+
+// Resource Clean-Up
+        $quote = $customer = $service = null;
+
+// Finished
+        return $increment_id;
+
+    }
     public function staffAction()
     {
         $staff = Mage::getModel('salestaff/staff')
@@ -65,7 +140,7 @@ class Dksmart_Salestaff_IndexController extends Mage_Core_Controller_Front_Actio
         $product = Mage::getModel('catalog/product')
             ->getCollection()
             ->addAttributeToSelect('*')
-            ->setOrder('entity_id', 'ASC')
+            ->setOrder('entity_id', 'ASC') 
             ->setPageSize(100);
         $arr_products = array();
 
